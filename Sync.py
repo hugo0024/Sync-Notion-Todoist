@@ -106,7 +106,7 @@ def sync_todoist_task(task):
     if last_synced_time and task['last_modified'] <= last_synced_time:
         return
 
-    url = f'https://api.todoist.com/rest/v2/tasks/{task["todoist-id"]}'
+    url = f'https://api.todoist.com/rest/v2/tasks/{task["todoist-id"]}' if task['todoist-id'] else 'https://api.todoist.com/rest/v2/tasks'
     payload = {
         'content': task['name'],
         'labels': task['labels']
@@ -114,7 +114,7 @@ def sync_todoist_task(task):
 
     if task['due_date']:
         due_date_obj = datetime.strptime(task['due_date'], '%Y-%m-%d')
-        payload['due_string'] = due_date_obj.strftime('%Y-%m-%dT00:00') # [2]
+        payload['due_string'] = due_date_obj.strftime('%Y-%m-%dT00:00')
     else:
         payload['due_string'] = None
 

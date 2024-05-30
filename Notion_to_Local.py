@@ -1,6 +1,7 @@
 import requests
 import json
 import os
+import sys
 import subprocess
 from datetime import datetime, timezone
 from dotenv import load_dotenv
@@ -31,10 +32,10 @@ def get_notion_tasks():
     
     if response.status_code == 401:
         print("Error: Invalid Notion API token. Please check your NOTION_API_TOKEN environment variable.")
-        return []
+        sys.exit(1)
     if response.status_code == 400:
-        print("Error: Invalid Notion DataBase ID. Please check your NOTION_API_TOKEN environment variable.")
-        return []
+        print("Error: Invalid Notion Database ID. Please check your NOTION_DATABASE_ID environment variable.")
+        sys.exit(1)
     
     response.raise_for_status()
     return response.json().get('results')
@@ -46,7 +47,7 @@ def get_todoist_tasks():
     
     if response.status_code == 401:
         print("Error: Invalid Todoist API token. Please check your TODOIST_API_TOKEN environment variable.")
-        return []
+        sys.exit(1)
     
     response.raise_for_status()
     return response.json()
