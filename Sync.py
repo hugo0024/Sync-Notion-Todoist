@@ -3,26 +3,7 @@ import json
 import os
 from datetime import datetime, timezone
 from dotenv import load_dotenv
-
-# Load environment variables from .env file
-load_dotenv()
-
-# Configuration
-# Notion API
-NOTION_API_TOKEN = os.getenv('NOTION_API_TOKEN')
-NOTION_DATABASE_ID = os.getenv('NOTION_DATABASE_ID')
-notion_headers = {
-    'Authorization': f'Bearer {NOTION_API_TOKEN}',
-    'Content-Type': 'application/json',
-    'Notion-Version': '2022-06-28'
-}
-
-# Todoist API
-TODOIST_API_TOKEN = os.getenv('TODOIST_API_TOKEN')
-todoist_headers = {
-    'Authorization': f'Bearer {TODOIST_API_TOKEN}',
-    'Content-Type': 'application/json'
-}
+from helper import *
 
 # Function to get tasks from local JSON file
 def get_local_tasks(file_path='tasks.json'):

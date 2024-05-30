@@ -4,51 +4,7 @@ import os
 import subprocess
 from datetime import datetime, timezone
 from dotenv import load_dotenv
-
-# Load environment variables from .env file
-load_dotenv()
-
-# Configuration
-# Notion API
-NOTION_API_TOKEN = os.getenv('NOTION_API_TOKEN')
-NOTION_DATABASE_ID = os.getenv('NOTION_DATABASE_ID')
-notion_headers = {
-    'Authorization': f'Bearer {NOTION_API_TOKEN}',
-    'Content-Type': 'application/json',
-    'Notion-Version': '2022-06-28'
-}
-
-# Todoist API
-TODOIST_API_TOKEN = os.getenv('TODOIST_API_TOKEN')
-todoist_headers = {
-    'Authorization': f'Bearer {TODOIST_API_TOKEN}',
-    'Content-Type': 'application/json'
-}
-
-# Function to clear the console
-def cls():
-    os.system('cls' if os.name == 'nt' else 'clear')
-
-# Function to get tasks from Todoist
-def get_todoist_tasks():
-    url = 'https://api.todoist.com/rest/v2/tasks'
-    response = requests.get(url, headers=todoist_headers)
-    response.raise_for_status()
-    return response.json()
-
-# Function to get completed tasks from Todoist
-def get_completed_todoist_tasks():
-    url = 'https://api.todoist.com/sync/v9/completed/get_all'
-    response = requests.get(url, headers=todoist_headers)
-    response.raise_for_status()
-    return response.json().get('items', [])
-
-# Function to get tasks from Notion
-def get_notion_tasks():
-    url = f'https://api.notion.com/v1/databases/{NOTION_DATABASE_ID}/query'
-    response = requests.post(url, headers=notion_headers)
-    response.raise_for_status()
-    return response.json().get('results')
+from helper import *
 
 # Function to create a task in Notion
 def create_notion_task(task_name, task_description, task_due_date, todoist_task_id, notion_tasks_id_dict, task_labels):
