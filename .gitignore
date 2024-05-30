@@ -1,0 +1,5 @@
+.env
+*.json
+.vs/
+.build/
+.dist/
