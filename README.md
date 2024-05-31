@@ -1,5 +1,6 @@
 
 
+
 # Sync Notion Todoist
 This application, Sync-Notion-Todoist, is designed to provide a two-way synchronization between your Notion database and Todoist tasks. It allows you to manage your tasks seamlessly across both platforms.
 
@@ -36,3 +37,15 @@ The application uses the APIs provided by both Notion and Todoist to fetch and m
 	    NOTION_DATABASE_ID = "YOUR_NOTION_DATABASE_ID"
 	    TODOIST_API_TOKEN = "YOUR_TODOIST_API_TOKEN"
 4. Run `main.py`
+
+# Docker Setup
+1. Open the `docker-compose.yml` file.
+2. Edit the environment variables: 
+
+        environment:
+	       NOTION_API_TOKEN=YOUR_NOTION_API_TOKEN
+	       NOTION_DATABASE_ID=YOUR_NOTION_DATABASE_ID
+           TODOIST_API_TOKEN=YOUR_TODOIST_API_TOKEN
+
+3. Run `docker-compose build`
+4. Run `docker-compose up`
