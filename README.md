@@ -27,7 +27,7 @@ https://hugolee001124.notion.site/147e2b7fda31408db8e1149daf7f4406?v=d20f6074f43
 # How it Works
 The application uses the APIs provided by both Notion and Todoist to fetch and manipulate tasks. It compares the tasks from both platforms and performs necessary updates to keep them in sync.
 
-# Setup
+# Run Locally
 1. Clone the repository to your local machine.
 2. Install the required Python packages by running `pip install -r requirements.txt`
 3. Create a *.env* file in the root directory to include your Notion API tonken, Todoist API tonken and Notion databse ID in the following format:
