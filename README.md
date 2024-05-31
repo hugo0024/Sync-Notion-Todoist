@@ -1,6 +1,6 @@
 
 
-# Sync-Notion-Todoist
+# Sync Notion Todoist
 This application, Sync-Notion-Todoist, is designed to provide a two-way synchronization between your Notion database and Todoist tasks. It allows you to manage your tasks seamlessly across both platforms.
 
 # Features
