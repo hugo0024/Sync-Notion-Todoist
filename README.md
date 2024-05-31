@@ -47,5 +47,4 @@ The application uses the APIs provided by both Notion and Todoist to fetch and m
 	       NOTION_DATABASE_ID=YOUR_NOTION_DATABASE_ID
            TODOIST_API_TOKEN=YOUR_TODOIST_API_TOKEN
 
-3. Run `docker-compose build`
-4. Run `docker-compose up`
+3. Run `docker-compose up`
