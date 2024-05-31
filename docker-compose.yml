@@ -1,0 +1,13 @@
+version: '3.9'
+
+services:
+  myapp:
+    image: sync-notion-todoist
+    build:
+      context: .
+    ports:
+      - "4000:80"
+    environment:
+      - NOTION_API_TOKEN=YOUR_NOTION_API_TOKEN
+      - NOTION_DATABASE_ID=YOUR_NOTION_DATABASE_ID
+      - TODOIST_API_TOKEN=YOUR_TODOIST_API_TOKEN
