@@ -56,10 +56,10 @@ def get_todoist_tasks():
 # Function to get completed tasks from Todoist
 def get_completed_todoist_tasks():
     url = 'https://api.todoist.com/sync/v9/completed/get_all'
+    response = requests.get(url, headers=todoist_headers)
     if response.status_code == 401:
         print("Error: Invalid Todoist API token. Please check your TODOIST_API_TOKEN environment variable.")
         sys.exit(3)
-    response = requests.get(url, headers=todoist_headers)
     response.raise_for_status()
     return response.json().get('items', [])
 
