@@ -2,7 +2,7 @@ version: '3.9'
 
 services:
   myapp:
-    image: sync-notion-todoist
+    image: hugo0024/syncnotiontodoist:latest
     build:
       context: .
     ports:
