@@ -1,8 +1,6 @@
-import requests
 import json
 import os
 from datetime import datetime, timezone
-from dotenv import load_dotenv
 from helper import *
 
 # Function to get tasks from local JSON file

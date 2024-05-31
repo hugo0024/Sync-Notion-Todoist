@@ -1,9 +1,7 @@
-import requests
 import json
 import os
 import subprocess
 from datetime import datetime, timezone
-from dotenv import load_dotenv
 from helper import *
 
 # Function to create a task in Notion

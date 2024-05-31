@@ -1,30 +1,9 @@
-import requests
 import json
 import os
 import sys
 import subprocess
 from datetime import datetime, timezone
-from dotenv import load_dotenv
 from helper import *
-
-# Load environment variables from .env file
-load_dotenv()
-# Configuration
-NOTION_API_TOKEN = os.getenv('NOTION_API_TOKEN')
-NOTION_DATABASE_ID = os.getenv('NOTION_DATABASE_ID')
-TODOIST_API_TOKEN = os.getenv('TODOIST_API_TOKEN')
-
-notion_headers = {
-    'Authorization': f'Bearer {NOTION_API_TOKEN}',
-    'Content-Type': 'application/json',
-    'Notion-Version': '2022-06-28'
-}
-
-todoist_headers = {
-    'Authorization': f'Bearer {TODOIST_API_TOKEN}',
-    'Content-Type': 'application/json'
-}
-
 
 # Function to create a task in Todoist
 def create_todoist_task(task_name):
