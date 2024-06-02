@@ -29,68 +29,6 @@ def create_notion_task(task_name, task_description, task_due_date, todoist_task_
     response.raise_for_status()
     print(f"Task '{task_name}' created successfully in Notion")
 
-# Function to update task status, title, due date, and labels in Notion
-def update_notion_task(task_id, is_completed, task_name, task_due_date, task_labels):
-    url = f'https://api.notion.com/v1/pages/{task_id}'
-    payload = {
-        'properties': {
-            'Name': {'title': [{'text': {'content': task_name}}]},
-            'Done': {'checkbox': is_completed},
-            'Type': {'multi_select': [{'name': label} for label in task_labels]}
-        }
-    }
-    if task_due_date:
-        due_date_obj = datetime.strptime(task_due_date, '%Y-%m-%d')
-        payload['properties']['Date'] = {'date': {'start': due_date_obj.strftime('%Y-%m-%d')}}
-    else:
-        payload['properties']['Date'] = {'date': None}
-
-    response = requests.patch(url, headers=notion_headers, data=json.dumps(payload))
-    response.raise_for_status()
-    print(f"Task with ID {task_id} updated successfully in Notion")
-
-# Function to delete a task in Notion
-def delete_notion_task(task_id):
-    url = f'https://api.notion.com/v1/pages/{task_id}'
-    response = requests.patch(url, headers=notion_headers, data=json.dumps({"archived": True}))
-    response.raise_for_status()
-    print(f"Task with ID {task_id} deleted successfully from Notion")
-
-# Function to load tasks from the JSON file
-def load_tasks_from_json(filename):
-    try:
-        with open(filename, 'r', encoding='utf-8') as file:
-            tasks = json.load(file)
-    except FileNotFoundError:
-        tasks = []
-    # Ensure all tasks have the 'deleted' field
-    for task in tasks:
-        if 'deleted' not in task:
-            task['deleted'] = False
-    return tasks
-
-# Function to save tasks to the JSON file
-def save_tasks_to_json(tasks, filename):
-    try:
-        with open(filename, 'r', encoding='utf-8') as file:
-            existing_tasks = json.load(file)
-    except FileNotFoundError:
-        existing_tasks = []
-
-    if tasks != existing_tasks:
-        with open(filename, 'w', encoding='utf-8') as file:
-            json.dump(tasks, file, ensure_ascii=False, indent=2, default=str)
-        print(f"Update from Todoist, tasks saved to {filename}")
-        
-        # Run Sync.py after saving the JSON data
-        result = subprocess.run(["python", "Sync.py"], capture_output=True, text=True)
-        if result.returncode == 0:
-            print("Sync.py executed successfully.")
-        else:
-            print(f"Sync.py execution failed with error: {result.stderr}")
-    else:
-        print("No changes detected from Todoist, skipping save.")
-        
 # Main function
 def sync_todoist_to_json():
     tasks = load_tasks_from_json('tasks.json')

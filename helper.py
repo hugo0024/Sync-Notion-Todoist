@@ -84,3 +84,12 @@ def save_tasks_to_json(tasks, filename):
             print(f"Sync.py execution failed with error: {result.stderr}")
     else:
         print("No changes detected, skipping save.")
+
+# Function to load tasks from the JSON file
+def load_tasks_from_json(filename):
+    try:
+        with open(filename, 'r', encoding='utf-8') as file:
+            tasks = json.load(file)
+    except FileNotFoundError:
+        tasks = []
+    return tasks

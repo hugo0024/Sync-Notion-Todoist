@@ -51,14 +51,6 @@ def update_notion_task_status(notion_task_id, completed):
     response = requests.patch(url, headers=notion_headers, data=json.dumps(payload))
     response.raise_for_status()
 
-# Function to load tasks from the JSON file
-def load_tasks_from_json(filename):
-    try:
-        with open(filename, 'r', encoding='utf-8') as file:
-            tasks = json.load(file)
-    except FileNotFoundError:
-        tasks = []
-    return tasks
 
 # Main function
 def sync_notion_to_json():
