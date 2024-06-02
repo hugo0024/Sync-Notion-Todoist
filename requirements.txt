@@ -1,2 +1,4 @@
 python-dotenv==1.0.1
-Requests==2.32.2
+python_dateutil==2.9.0.post0
+pytz==2024.1
+Requests==2.32.3

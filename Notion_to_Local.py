@@ -4,6 +4,7 @@ import sys
 import subprocess
 from datetime import datetime, timezone
 from helper import *
+import requests
 
 # Function to create a task in Todoist
 def create_todoist_task(task_name):
@@ -50,7 +51,6 @@ def update_notion_task_status(notion_task_id, completed):
     }
     response = requests.patch(url, headers=notion_headers, data=json.dumps(payload))
     response.raise_for_status()
-
 
 # Main function
 def sync_notion_to_json():
@@ -116,7 +116,8 @@ def sync_notion_to_json():
                 'completed': task_completed,
                 'due_date': task_due_date,
                 'labels': task_labels,
-                'last_modified': datetime.now(timezone.utc).replace(microsecond=0).isoformat()
+                'last_modified': datetime.now(timezone.utc).replace(microsecond=0).isoformat(),
+                'deleted': False  # Initialize the deleted field to False
             }
 
             tasks.append(task_data)

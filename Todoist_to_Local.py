@@ -119,9 +119,14 @@ def sync_todoist_to_json():
 
         # Mark task as deleted if it no longer exists in Todoist
         if todoist_task_id not in todoist_tasks_dict and todoist_task_id not in completed_todoist_tasks_dict:
-            if not task['deleted']:
+            if not task.get('deleted', False):
                 task['deleted'] = True
                 task_changed = True
+
+        # Ensure the 'deleted' field is initialized to False if not present
+        if 'deleted' not in task:
+            task['deleted'] = False
+            task_changed = True
 
         # Update the last_modified timestamp if the task has changed
         if task_changed:
