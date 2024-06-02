@@ -1,6 +1,7 @@
 import json
 import os
 from datetime import datetime, timezone
+from dateutil.parser import parse
 from helper import *
 
 # Function to get tasks from local JSON file
@@ -69,8 +70,13 @@ def sync_notion_task(task):
         }
     }
     if task['due_date']:
-        due_date_obj = datetime.strptime(task['due_date'], '%Y-%m-%d')
-        payload['properties']['Date'] = {'date': {'start': due_date_obj.strftime('%Y-%m-%d')}}
+        due_date_obj = parse(task['due_date'])
+        if due_date_obj.time() != datetime.min.time():
+            # If time is present, include it
+            payload['properties']['Date'] = {'date': {'start': due_date_obj.isoformat()}}
+        else:
+            # If only date is present, format without time
+            payload['properties']['Date'] = {'date': {'start': due_date_obj.strftime('%Y-%m-%d')}}
     else:
         payload['properties']['Date'] = {'date': None}
 
@@ -92,10 +98,15 @@ def sync_todoist_task(task):
     }
 
     if task['due_date']:
-        due_date_obj = datetime.strptime(task['due_date'], '%Y-%m-%d')
-        payload['due_string'] = due_date_obj.strftime('%Y-%m-%dT00:00')
+        due_date_obj = parse(task['due_date'])
+        if due_date_obj.time() != datetime.min.time():
+            # If time is present, include it
+            payload['due_string'] = due_date_obj.isoformat()
+        else:
+            # If only date is present, remove due_string
+            payload['due_date'] = due_date_obj.strftime('%Y-%m-%d')
     else:
-        payload['due_string'] = None
+        payload['due_string'] = "no due date"
 
     try:
         if task['todoist-id']:

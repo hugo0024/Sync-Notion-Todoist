@@ -72,6 +72,10 @@ def sync_notion_to_json():
         task_due_date = task['properties']['Date']['date']['start'] if task['properties']['Date']['date'] else None
         task_labels = [label['name'] for label in task['properties']['Type']['multi_select']]
 
+        if task_due_date:
+            # Remove milliseconds from the due date
+            task_due_date = datetime.fromisoformat(task_due_date).replace(microsecond=0).isoformat()
+
         if task_id in tasks_dict:
             # Update existing task in JSON file
             task_data = tasks_dict[task_id]
@@ -94,7 +98,7 @@ def sync_notion_to_json():
                 task_changed = True
 
             if task_changed:
-                task_data['last_modified'] = datetime.now(timezone.utc).isoformat()
+                task_data['last_modified'] = datetime.now(timezone.utc).replace(microsecond=0).isoformat()
 
         else:
             # Create a task in Todoist and get the task ID
@@ -112,7 +116,7 @@ def sync_notion_to_json():
                 'completed': task_completed,
                 'due_date': task_due_date,
                 'labels': task_labels,
-                'last_modified': datetime.now(timezone.utc).isoformat()
+                'last_modified': datetime.now(timezone.utc).replace(microsecond=0).isoformat()
             }
 
             tasks.append(task_data)
@@ -121,7 +125,7 @@ def sync_notion_to_json():
     for task in tasks:
         if task['notion-id'] not in notion_task_ids:
             task['deleted'] = True
-            task['last_modified'] = datetime.now(timezone.utc).isoformat()
+            task['last_modified'] = datetime.now(timezone.utc).replace(microsecond=0).isoformat()
 
     save_tasks_to_json(tasks, 'tasks.json')
 
