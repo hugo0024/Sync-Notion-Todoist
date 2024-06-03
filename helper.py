@@ -64,7 +64,7 @@ def get_completed_todoist_tasks():
     return response.json().get('items', [])
 
 # Function to save tasks to the JSON file
-def save_tasks_to_json(tasks, filename):
+def save_tasks_to_json(tasks, filename, name):
     try:
         with open(filename, 'r', encoding='utf-8') as file:
             existing_tasks = json.load(file)
@@ -74,8 +74,7 @@ def save_tasks_to_json(tasks, filename):
     if tasks != existing_tasks:
         with open(filename, 'w', encoding='utf-8') as file:
             json.dump(tasks, file, ensure_ascii=False, indent=2, default=str)
-        print(f"Update from Todoist, tasks saved to {filename}")
-        
+        print(f"Update from " + name + ", tasks saved to " + filename + ".")
         # Run Sync.py after saving the JSON data
         result = subprocess.run(["python", "Sync.py"], capture_output=True, text=True)
         if result.returncode == 0:
@@ -83,7 +82,8 @@ def save_tasks_to_json(tasks, filename):
         else:
             print(f"Sync.py execution failed with error: {result.stderr}")
     else:
-        print("No changes detected, skipping save.")
+        print(f"No changes detected from " + name)
+
 
 # Function to load tasks from the JSON file
 def load_tasks_from_json(filename):
@@ -92,4 +92,8 @@ def load_tasks_from_json(filename):
             tasks = json.load(file)
     except FileNotFoundError:
         tasks = []
+    # Ensure all tasks have the 'deleted' field
+    for task in tasks:
+        if 'deleted' not in task:
+            task['deleted'] = False
     return tasks
