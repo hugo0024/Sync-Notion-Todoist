@@ -2,8 +2,11 @@ import json
 import os
 import sys
 import subprocess
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 from helper import *
+
+# Define the GMT+8 timezone
+GMT_PLUS_8 = timezone(timedelta(hours=8))
 
 # Function to create a task in Todoist
 def create_todoist_task(task_name):
@@ -71,6 +74,10 @@ def sync_notion_to_json():
         task_due_date = task['properties']['Date']['date']['start'] if task['properties']['Date']['date'] else None
         task_labels = [label['name'] for label in task['properties']['Type']['multi_select']]
 
+        if task_due_date:
+            # Remove milliseconds from the due date and localize to GMT+8
+            task_due_date = datetime.fromisoformat(task_due_date).replace(microsecond=0).astimezone(GMT_PLUS_8).isoformat()
+
         if task_id in tasks_dict:
             # Update existing task in JSON file
             task_data = tasks_dict[task_id]
@@ -93,7 +100,7 @@ def sync_notion_to_json():
                 task_changed = True
 
             if task_changed:
-                task_data['last_modified'] = datetime.now(timezone.utc).isoformat()
+                task_data['last_modified'] = datetime.now(timezone.utc).astimezone(GMT_PLUS_8).isoformat()
 
         else:
             # Create a task in Todoist and get the task ID
@@ -111,7 +118,7 @@ def sync_notion_to_json():
                 'completed': task_completed,
                 'due_date': task_due_date,
                 'labels': task_labels,
-                'last_modified': datetime.now(timezone.utc).isoformat()
+                'last_modified': datetime.now(timezone.utc).astimezone(GMT_PLUS_8).isoformat()
             }
 
             tasks.append(task_data)
@@ -120,7 +127,7 @@ def sync_notion_to_json():
     for task in tasks:
         if task['notion-id'] not in notion_task_ids:
             task['deleted'] = True
-            task['last_modified'] = datetime.now(timezone.utc).isoformat()
+            task['last_modified'] = datetime.now(timezone.utc).astimezone(GMT_PLUS_8).isoformat()
 
     save_tasks_to_json(tasks, 'tasks.json', "Notion")
 

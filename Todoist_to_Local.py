@@ -1,8 +1,12 @@
 import json
 import os
 import subprocess
-from datetime import datetime, timezone
+import pytz
+from datetime import datetime, timezone, timedelta
 from helper import *
+
+# Define the GMT+8 timezone
+GMT_PLUS_8 = pytz.timezone('Etc/GMT-8')
 
 # Function to create a task in Notion
 def create_notion_task(task_name, task_description, task_due_date, todoist_task_id, notion_tasks_id_dict, task_labels):
@@ -22,8 +26,18 @@ def create_notion_task(task_name, task_description, task_due_date, todoist_task_
         }
     }
     if task_due_date:
-        due_date_obj = datetime.strptime(task_due_date, '%Y-%m-%d')
-        payload['properties']['Date'] = {'date': {'start': due_date_obj.strftime('%Y-%m-%d')}}
+        if task_due_date.endswith('Z'):
+            due_date_obj = datetime.strptime(task_due_date, '%Y-%m-%dT%H:%M:%SZ').replace(tzinfo=timezone.utc)
+        else:
+            due_date_obj = datetime.fromisoformat(task_due_date)
+        
+        if due_date_obj.tzinfo is None:
+            # Assume the local time is in a specific timezone, e.g., GMT+08:00
+            local_tz = GMT_PLUS_8
+            due_date_obj = local_tz.localize(due_date_obj)
+        task_due_date = due_date_obj.astimezone(GMT_PLUS_8).strftime('%Y-%m-%dT%H:%M:%S%z')
+        task_due_date = task_due_date[:-2] + ':' + task_due_date[-2:]
+        payload['properties']['Date'] = {'date': {'start': task_due_date}}
     
     response = requests.post(url, headers=notion_headers, data=json.dumps(payload))
     response.raise_for_status()
@@ -50,7 +64,20 @@ def sync_todoist_to_json():
         todoist_task_labels = todoist_task['labels']
         if todoist_task_id not in notion_tasks_id_dict:
             due = todoist_task.get('due')
-            task_due_date = due.get('date') if due else ''
+            task_due_date = due.get('datetime') if due and 'datetime' in due else due.get('date') if due else ''
+            if task_due_date:
+                if task_due_date.endswith('Z'):
+                    due_date_obj = datetime.strptime(task_due_date, '%Y-%m-%dT%H:%M:%SZ').replace(tzinfo=timezone.utc)
+                else:
+                    due_date_obj = datetime.fromisoformat(task_due_date)
+                
+                if due_date_obj.tzinfo is None:
+                    # Assume the local time is in a specific timezone, e.g., GMT+08:00
+                    local_tz = GMT_PLUS_8
+                    due_date_obj = local_tz.localize(due_date_obj)
+                task_due_date = due_date_obj.astimezone(GMT_PLUS_8).strftime('%Y-%m-%dT%H:%M:%S%z')
+                # Adjust the format to include the colon in the timezone offset
+                task_due_date = task_due_date[:-2] + ':' + task_due_date[-2:]
             create_notion_task(task_name, task_description, task_due_date, todoist_task_id, notion_tasks_id_dict, todoist_task_labels)
 
     # Update local JSON file based on Todoist tasks
@@ -73,7 +100,21 @@ def sync_todoist_to_json():
             
             # Check if 'due' attribute exists and is not None
             if 'due' in todoist_task and todoist_task['due'] is not None:
-                due_date = todoist_task['due'].get('date', '')
+                due = todoist_task['due']
+                due_date = due.get('datetime') if 'datetime' in due else due.get('date', '')
+                if due_date:
+                    if due_date.endswith('Z'):
+                        due_date_obj = datetime.strptime(due_date, '%Y-%m-%dT%H:%M:%SZ').replace(tzinfo=timezone.utc)
+                    else:
+                        due_date_obj = datetime.fromisoformat(due_date)
+                    
+                    if due_date_obj.tzinfo is None:
+                        # Assume the local time is in a specific timezone, e.g., GMT+08:00
+                        local_tz = GMT_PLUS_8
+                        due_date_obj = local_tz.localize(due_date_obj)
+                    due_date = due_date_obj.astimezone(GMT_PLUS_8).strftime('%Y-%m-%dT%H:%M:%S%z')
+                    # Adjust the format to include the colon in the timezone offset
+                    due_date = due_date[:-2] + ':' + due_date[-2:]
                 if task['due_date'] != due_date:
                     task['due_date'] = due_date
                     task_changed = True
